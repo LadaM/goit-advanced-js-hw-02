@@ -32,7 +32,7 @@ submitButton.addEventListener('click', (event) => {
   const count = Number(form.elements.amount.value);
   const delay = Number(form.elements.delay.value);
   const step = Number(form.elements.step.value);
-  for (let i = 1; i <= count; i += 1) {
+  for (let i = 0; i < count; i += 1) {
     setTimeout(() => {
       createPromise(i, delay + i * step);
     }, delay + i * step);

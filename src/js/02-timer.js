@@ -3,6 +3,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import Notiflix from 'notiflix';
 
+// Initialize Flatpickr
 const date_time_picker = flatpickr('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
@@ -20,9 +21,6 @@ const date_time_picker = flatpickr('#datetime-picker', {
       startButton.removeAttribute('disabled');
     }
   },
-  onOpen() {
-    this.setDate(new Date());
-  },
 });
 
 const startButton = document.querySelector('[data-start]');
@@ -30,9 +28,9 @@ const days_countdown = document.querySelector('span[data-days]');
 const hours_countdown = document.querySelector('span[data-hours]');
 const minutes_countdown = document.querySelector('span[data-minutes]');
 const seconds_countdown = document.querySelector('span[data-seconds]');
+const date_input = document.querySelector('#datetime-picker');
 
 let interval;
-let intervalCleared = false;
 
 function convertMs(timeDifference) {
   const minute_in_ms = 1000 * 60;
@@ -55,24 +53,23 @@ function setTimer() {
   const now = new Date();
   const futureDate = new Date(date_time_picker.selectedDates[0]);
   const timeDifference = futureDate - now;
-  if (now < futureDate) {
+
+  if (timeDifference > 0) {
     const { days, hours, minutes, seconds } = convertMs(timeDifference);
     days_countdown.textContent = addLeadingZero(days.toString());
     hours_countdown.textContent = addLeadingZero(hours.toString());
     minutes_countdown.textContent = addLeadingZero(minutes.toString());
     seconds_countdown.textContent = addLeadingZero(seconds.toString());
+    startButton.setAttribute('disabled', 'true');
+    date_input.setAttribute('disabled', 'true');
   } else {
-    if (!intervalCleared) {
-      clearInterval(interval);
-      intervalCleared = true;
-      // Notiflix.Notify.success('Time is up!');
-      startButton.setAttribute('disabled', 'true');
-    }
+    date_input.removeAttribute('disabled');
+    clearInterval(interval);
+    Notiflix.Notify.success('Time is up!');
   }
 }
 
 startButton.addEventListener('click', () => {
-  intervalCleared = false;
   setTimer();
-  interval = setInterval(() => setTimer(), 1000);
+  interval = setInterval(setTimer, 1000);
 });
